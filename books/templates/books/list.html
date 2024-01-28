@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title  %} Book List Page {% endblock %}
+{% block content %}
+    <h1>Books</h1>
+    <div class="row mb-3">
+        <div class="col-4">
+            <form method="get" class="d-flex">
+                <input type="text" value="{{ search_query }}" name="q" class="border border-3 border-warning-subtle form-control me-2" placeholder="search">
+                <button class="btn fw-bold btn-outline-light" style="background-color: darkgoldenrod">Search</button>
+            </form>
+        </div>
+    </div>
+
+    {% if page_obj%}
+
+        <div class="mb-3">
+        <h4>{{ books_count }} books:</h4>
+        </div>
+
+            {% for book in page_obj.object_list %}
+                <div class="row mb-5 ">
+                    <div class="col-2">
+                        <div class="border border-5 border-warning"><img class="cover-pic" alt="No Picture" src="{{ book.cover_picture.url }}"></div>
+                    </div>
+                    <div class="col-8 ms-4 d-flex align-content-between flex-wrap">
+                        <h5 class="mb-4"><a class="title" style="color:darkgoldenrod" href="{% url 'books:detail' book.pk %}">{{ book.title }}</a></h5>
+                        <p>{{ book.description | truncatewords:100 }}</p>
+                        <p class="ms-auto">ISBN: {{ book.isbn }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1&q={{ search_query }}">&laquo; first</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">previous</a></li>
+                    {% endif %}
+                <li class="page-item active">
+                    <a class="page-link" href="#">{{ page_obj.number }}</a>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ search_query }}">last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+    {% else %}
+        No books found
+    {% endif %}
+{% endblock %}
+
